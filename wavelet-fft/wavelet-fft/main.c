@@ -11,23 +11,32 @@
 #include <time.h>
 #include "fourierTransform.h"
 
-void compare(const unsigned long long q);
+typedef struct {
+    clock_t fft;
+    clock_t dft;
+} elapsedtime;
+elapsedtime compare(const unsigned long long q);
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
-    
-    for (int i = 0; i < 100; i++) {
-        for(unsigned long long q = 1; q <= 10; q++)
+int main(int argc, const char * argv[])
+{
+    for(unsigned long long q = 1; q <= 10; q++)
+    {
+        clock_t tFFT = 0.0;
+        clock_t tDFT = 0.0;
+        for (int i = 0; i < 1000; i++)
         {
-            compare(1 << q);
+            elapsedtime t = compare(1 << q);
+            tFFT += t.fft;
+            tDFT += t.dft;
         }
+        printf("N: %llu FFT: %f DFT: %f\n", q, tFFT/1000.0, tDFT/1000.0);
     }
+    
     
     return 0;
 }
 
-void compare(const unsigned long long q)
+elapsedtime compare(const unsigned long long q)
 {
     vecRef input = vecAlloc(q);
     for (unsigned long long i = 0; i < q; i++)
@@ -47,9 +56,13 @@ void compare(const unsigned long long q)
     clock_t tStart2 = clock();
     dft(input, &output2);
     clock_t tEnd2 = clock();
-    printf("N: %llu FFT: %lu DFT: %lu\n", q, tEnd - tStart, tEnd2 - tStart2);
     
     vecRelease(&input);
     vecRelease(&output);
     vecRelease(&output2);
+    
+    elapsedtime e;
+    e.dft = tEnd2 - tStart2;
+    e.fft = tEnd - tStart;
+    return e;
 }
