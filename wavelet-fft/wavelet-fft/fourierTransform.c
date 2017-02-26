@@ -78,7 +78,7 @@ void ifft(const vecRef input, vecRef *output)
     for (int q = rounds-1; q >= 0; q--)
     {
         vecSwap(output, &tmp);
-        computeFFT(q, tmp, output);
+        computeIFFT(q, tmp, output);
     }
     vecRelease(&tmp);
     vdivScalar(*output, ComplexMake(sqrt(N), 0.0), output);
@@ -104,6 +104,33 @@ void dft(const vecRef input, vecRef *output)
         for (Long j = 0; j < N; j++)
         {
             Complex wj = cPolarToComplex(1.0, -(2.0*M_PI*i*j)/N);
+            tmp = cAdd(tmp, cMultiply(wj, input->arr[j]));
+        }
+        (*output)->arr[i] = tmp;
+    }
+    vdivScalar(*output, ComplexMake(sqrt(N), 0.0), output);
+}
+
+void idft(const vecRef input, vecRef *output)
+{
+    assert(input->length >= 2);
+    Long N = input->length;
+    
+    // If output is null, we make it
+    // If output is not null and if it is not power of 2, we reallocate it
+    // Else, use output
+    if (*output == NULL || (*output)->length != N)
+    {
+        vecRelease(output);
+        *output = vecAlloc(N);
+    }
+    
+    for (Long i = 0; i < N; i++)
+    {
+        Complex tmp = ComplexMake(0, 0);
+        for (Long j = 0; j < N; j++)
+        {
+            Complex wj = cPolarToComplex(1.0, (2.0*M_PI*i*j)/N);
             tmp = cAdd(tmp, cMultiply(wj, input->arr[j]));
         }
         (*output)->arr[i] = tmp;

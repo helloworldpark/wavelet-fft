@@ -15,5 +15,6 @@
 void fft(const vecRef input, vecRef *output);
 void ifft(const vecRef input, vecRef *output);
 void dft(const vecRef input, vecRef *output);
+void idft(const vecRef input, vecRef *output);
 
 #endif /* fourierTransform_h */
