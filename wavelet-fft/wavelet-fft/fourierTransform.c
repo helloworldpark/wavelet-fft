@@ -180,13 +180,12 @@ void compute(const int q, int sign, const vecRef input, vecRef *output)
     if (sign >= 0) sign = 1;
     if (sign < 0) sign = -1;
     
-    for (Long block = 0; block < countBlock; block++)
+    for (Long baseIdx = 0; baseIdx < lenBlock/2; baseIdx++)
     {
-        const Long idxBase = block * lenBlock;
-        // Process block from the base
-        for (Long idx = idxBase; idx < idxBase + lenBlock/2; idx++)
+        const Complex w = cPolarToComplex(1.0, sign * (M_PI * baseIdx)/(lenBlock/2));
+        for (Long block = 0; block < countBlock; block++)
         {
-            const Complex w = cPolarToComplex(1.0, sign * (M_PI*(idx-idxBase))/(lenBlock/2));
+            const Long idx = baseIdx + block * lenBlock;
             const Complex a = input->arr[idx];
             const Complex b = input->arr[idx + lenBlock/2];
             const Complex wB = cMultiply(w, b);
