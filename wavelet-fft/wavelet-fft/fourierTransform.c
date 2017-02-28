@@ -177,6 +177,8 @@ void compute(const int q, int sign, const vecRef input, vecRef *output)
 {
     const Long countBlock = 1 << q;
     const Long lenBlock = (*output)->length / countBlock;
+    if (sign >= 0) sign = 1;
+    if (sign < 0) sign = -1;
     
     for (Long block = 0; block < countBlock; block++)
     {
